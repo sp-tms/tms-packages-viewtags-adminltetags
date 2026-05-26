@@ -6,56 +6,24 @@ use System\Base\BasePackage;
 
 class Adminltetags extends BasePackage
 {
-    //protected $modelToUse = ::class;
-
-    protected $packageName = 'adminltetags';
-
-    public $adminltetags;
-
-    public function getAdminltetagsById($id)
+    public function useTag(string $tagName, array $params)
     {
-        $adminltetags = $this->getById($id);
+        $explodedTagName = explode('/', $tagName);
 
-        if ($adminltetags) {
-            //
-            $this->addResponse('Success');
+        if (count($explodedTagName) === 1) {
+            $tag = 'Apps\\Tms\\Packages\\Adminltetags\\Tags\\' . ucfirst($explodedTagName[0]);
+        } else {
+            $tag = 'Apps\\Tms\\Packages\\Adminltetags\\Tags';
 
-            return;
+            foreach ($explodedTagName as $name) {
+                $tag .= '\\' . ucfirst($name);
+            }
         }
 
-        $this->addResponse('Error', 1);
-    }
-
-    public function addAdminltetags($data)
-    {
-        //
-    }
-
-    public function updateAdminltetags($data)
-    {
-        $adminltetags = $this->getById($id);
-
-        if ($adminltetags) {
-            //
-            $this->addResponse('Success');
-
-            return;
+        try {
+            return (new $tag($this->view, $this->tag, $this->links, $this->escaper))->getContent($params);
+        } catch (\Error $e) {
+            throw $e;
         }
-
-        $this->addResponse('Error', 1);
-    }
-
-    public function removeAdminltetags($data)
-    {
-        $adminltetags = $this->getById($id);
-
-        if ($adminltetags) {
-            //
-            $this->addResponse('Success');
-
-            return;
-        }
-
-        $this->addResponse('Error', 1);
     }
 }
