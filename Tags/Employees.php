@@ -31,7 +31,7 @@ class Employees extends Adminltetags
         }
 
         try {
-            $employee = 'Apps\\Tms\\Packages\\Adminltetags\\Tags\\Employees\\' . ucfirst($this->params['employeeFieldType']);
+            $employee = 'Apps\\Core\\Packages\\Adminltetags\\Tags\\Employees\\' . ucfirst($this->params['employeeFieldType']);
 
             $this->content .= (new $employee($this->view, $this->tag, $this->links, $this->escaper, $this->params, $this->employeesParams))->getContent();
 

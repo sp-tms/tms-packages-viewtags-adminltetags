@@ -1,8 +1,8 @@
 <?php
 
-namespace Apps\Tms\Packages\Adminltetags\Tags\Employees;
+namespace Apps\Core\Packages\Adminltetags\Tags\Employees;
 
-use Apps\Tms\Packages\Adminltetags\Adminltetags;
+use Apps\Core\Packages\Adminltetags\Adminltetags;
 
 class Single
 {
