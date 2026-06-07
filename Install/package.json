@@ -5,7 +5,7 @@
 	"module_type" : "packages",
 	"app_type" : "tms",
 	"category" : "viewtags",
-	"version" : "0.1.0",
+	"version" : "0.2.0",
 	"repo" : "https://github.com/sp-tms/tms-packages-viewtags-adminltetags",
 	"class" : "Apps\\Tms\\Packages\\Adminltetags\\Adminltetags",
 	"dependencies" : 
