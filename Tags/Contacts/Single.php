@@ -85,7 +85,7 @@ class Single
         $fieldsArr = null;
         $field = null;
 
-        $fieldsArr = ['multiple','includePortrait','includeNamePrefix','includeName','includeNameSuffix','includeEmail','includeOther','includeNotes','firstNameFieldHidden','firstNameFieldDisabled','firstNameFieldRequired','firstNameFieldBazPostOnCreate','firstNameFieldBazPostOnUpdate','lastNameFieldHidden','lastNameFieldDisabled','lastNameFieldRequired','lastNameFieldBazPostOnCreate','lastNameFieldBazPostOnUpdate','emailFieldHidden','emailFieldDisabled','emailFieldRequired','emailFieldBazPostOnCreate','emailFieldBazPostOnUpdate','secondaryEmailFieldHidden','secondaryEmailFieldDisabled','secondaryEmailFieldRequired','secondaryEmailFieldBazPostOnCreate','secondaryEmailFieldBazPostOnUpdate','ccEmailsToSecondaryEmailFieldHidden','ccEmailsToSecondaryEmailFieldDisabled','ccEmailsToSecondaryEmailFieldRequired','ccEmailsToSecondaryEmailFieldBazPostOnCreate','ccEmailsToSecondaryEmailFieldBazPostOnUpdate','contactPhoneFieldHidden','contactPhoneFieldDisabled','contactPhoneFieldRequired','contactPhoneFieldBazPostOnCreate','contactPhoneFieldBazPostOnUpdate','contactPhoneExtFieldHidden','contactPhoneExtFieldDisabled','contactPhoneExtFieldRequired','contactPhoneExtFieldBazPostOnCreate','contactPhoneExtFieldBazPostOnUpdate','contactMobileFieldHidden','contactMobileFieldDisabled','contactMobileFieldRequired','contactMobileFieldBazPostOnCreate','contactMobileFieldBazPostOnUpdate','contactFaxFieldHidden','contactFaxFieldDisabled','contactFaxFieldRequired','contactFaxFieldBazPostOnCreate','contactFaxFieldBazPostOnUpdate','contactOtherFieldHidden','contactOtherFieldDisabled','contactOtherFieldRequired','contactOtherFieldBazPostOnCreate','contactOtherFieldBazPostOnUpdate','contactNotesFieldHidden','contactNotesFieldDisabled','contactNotesFieldRequired','contactNotesFieldBazPostOnCreate','contactNotesFieldBazPostOnUpdate'];
+        $fieldsArr = ['multiple','includePortrait','includeNamePrefix','includeName','includeNameSuffix','includeEmail','includeSecondaryEmail','includeOther','includeNotes','firstNameFieldHidden','firstNameFieldDisabled','firstNameFieldRequired','firstNameFieldBazPostOnCreate','firstNameFieldBazPostOnUpdate','lastNameFieldHidden','lastNameFieldDisabled','lastNameFieldRequired','lastNameFieldBazPostOnCreate','lastNameFieldBazPostOnUpdate','emailFieldHidden','emailFieldDisabled','emailFieldRequired','emailFieldBazPostOnCreate','emailFieldBazPostOnUpdate','secondaryEmailFieldHidden','secondaryEmailFieldDisabled','secondaryEmailFieldRequired','secondaryEmailFieldBazPostOnCreate','secondaryEmailFieldBazPostOnUpdate','ccEmailsToSecondaryEmailFieldHidden','ccEmailsToSecondaryEmailFieldDisabled','ccEmailsToSecondaryEmailFieldRequired','ccEmailsToSecondaryEmailFieldBazPostOnCreate','ccEmailsToSecondaryEmailFieldBazPostOnUpdate','contactPhoneFieldHidden','contactPhoneFieldDisabled','contactPhoneFieldRequired','contactPhoneFieldBazPostOnCreate','contactPhoneFieldBazPostOnUpdate','contactPhoneExtFieldHidden','contactPhoneExtFieldDisabled','contactPhoneExtFieldRequired','contactPhoneExtFieldBazPostOnCreate','contactPhoneExtFieldBazPostOnUpdate','contactMobileFieldHidden','contactMobileFieldDisabled','contactMobileFieldRequired','contactMobileFieldBazPostOnCreate','contactMobileFieldBazPostOnUpdate','contactFaxFieldHidden','contactFaxFieldDisabled','contactFaxFieldRequired','contactFaxFieldBazPostOnCreate','contactFaxFieldBazPostOnUpdate','contactOtherFieldHidden','contactOtherFieldDisabled','contactOtherFieldRequired','contactOtherFieldBazPostOnCreate','contactOtherFieldBazPostOnUpdate','contactNotesFieldHidden','contactNotesFieldDisabled','contactNotesFieldRequired','contactNotesFieldBazPostOnCreate','contactNotesFieldBazPostOnUpdate'];
 
         foreach ($fieldsArr as $field) {
             $this->contactsParams[$field] =
@@ -100,7 +100,34 @@ class Single
 
     protected function buildSingleContactLayout()
     {
-        $vdivide = '';
+        $this->content .=
+            '<div class="row">
+                <div class="col">' .
+                    $this->adminLTETags->useTag('fields',
+                        [
+                            'component'                             => $this->params['component'],
+                            'componentName'                         => $this->params['componentName'],
+                            'componentId'                           => $this->params['componentId'],
+                            'sectionId'                             => $this->params['sectionId'],
+                            'fieldId'                               => 'contact_reference',
+                            'fieldLabel'                            => 'Contact Reference',
+                            'fieldType'                             => 'input',
+                            'fieldHelp'                             => true,
+                            'fieldHelpTooltipContent'               => 'Placeholder for js.',
+                            'fieldHidden'                           => true,
+                            'fieldDisabled'                         => true,
+                            'fieldRequired'                         => false,
+                            'fieldBazScan'                          => true,
+                            'fieldBazPostOnCreate'                  => false,
+                            'fieldBazPostOnUpdate'                  => false,
+                            'fieldDataInputMinLength'               => 1,
+                            'fieldDataInputMaxLength'               => 100,
+                            'fieldValue'                            => ''
+                        ]
+                    ) .
+                '</div>
+            </div>';
+
         if (isset($this->contactsParams['includePortrait']) && $this->contactsParams['includePortrait'] === true) {
             if ($this->contactsParams['multiple']) {
                 $this->content .= '<div class="col">';
@@ -115,6 +142,10 @@ class Single
                 $this->content .= '<div class="col-md-3 col-sm-12">';
                 $this->content .= $this->inclPortrait();
                 $this->content .= '</div>';
+            }
+        } else {
+            if ($this->contactsParams['multiple']) {
+                $this->content .= '<div class="col">';
             }
         }
 
@@ -171,8 +202,20 @@ class Single
     {
         $portrait = '';
 
+        if (!isset($this->params['maxHeight']) ||
+            isset($this->params['maxHeight']) && $this->params['maxHeight'] == 0
+        ) {
+            $this->contactsParams['maxHeight'] = 200;
+        }
+
+        if (!isset($this->params['maxWidth']) ||
+            isset($this->params['maxWidth']) && $this->params['maxWidth'] == 0
+        ) {
+            $this->contactsParams['maxWidth'] = 200;
+        }
+
         if (isset($this->contactsParams['portrait']) && $this->contactsParams['portrait'] !== '') {
-            $portraitLink = $this->links->url('system/storages/q/uuid/' . $this->contactsParams['portrait'] . '/w/200');
+            $portraitLink = $this->links->url('system/storages/q/uuid/' . $this->contactsParams['portrait'] . '/w/' . $this->contactsParams['maxWidth']);
         } else {
             $portraitLink = '';
         }
@@ -200,7 +243,9 @@ class Single
                     'avatar'                         => true,
                     'remove'                         => true,
                     'recover'                        => true,
-                    'portraitLink'                   => $portraitLink
+                    'portraitLink'                   => $portraitLink,
+                    'maxHeight'                      => $this->contactsParams['maxHeight'],
+                    'maxWidth'                       => $this->contactsParams['maxWidth']
                 ]
             );
 
@@ -214,7 +259,7 @@ class Single
 
         if ($this->contactsParams['includeNamePrefix']) {
             $name .=
-                '<div class="col-md-1">' .
+                '<div class="col-md-2">' .
                     $this->adminLTETags->useTag('fields',
                         [
                             'component'                      => $this->params['component'],
@@ -295,7 +340,7 @@ class Single
 
         if ($this->contactsParams['includeNameSuffix']) {
             $name .=
-                '<div class="col-md-1">' .
+                '<div class="col-md-2">' .
                     $this->adminLTETags->useTag('fields',
                         [
                             'component'                      => $this->params['component'],
@@ -335,7 +380,7 @@ class Single
             }
         }
 
-        return
+        $email =
             '<div class="row">
                 <div class="col">' .
                     $this->adminLTETags->useTag('fields',
@@ -362,8 +407,10 @@ class Single
                             'fieldValue'                     => $this->contactsParams['email']
                         ]
                     ) .
-                '</div>
-                <div class="col">
+                '</div>';
+        if (isset($this->contactsParams['includeSecondaEmail']) && $this->contactsParams['includeSecondaEmail'] === true) {
+            $email .=
+                '<div class="col">
                     <div class="row">
                         <div class="col-md-10">' .
                             $this->adminLTETags->useTag('fields',
@@ -419,6 +466,12 @@ class Single
                     </div>
                 </div>
             </div>';
+
+        } else {
+            $email .= '</div>';
+        }
+
+        return $email;
     }
 
     protected function inclPhone()
@@ -640,7 +693,8 @@ class Single
     protected function inclNameJs()
     {
         return
-            '"' . $this->compSecId . '-prefix"                      : { },
+            '"' . $this->compSecId . '-contact_reference"           : { },
+            "' . $this->compSecId . '-prefix"                       : { },
             "' . $this->compSecId . '-first_name"                   : { },
             "' . $this->compSecId . '-last_name"                    : { },
             "' . $this->compSecId . '-suffix"                       : { },';
@@ -648,10 +702,15 @@ class Single
 
     protected function inclEmailJs()
     {
-        return
-            '"' . $this->compSecId . '-email"                       : { },
-            "' . $this->compSecId . '-secondary_email"              : { },
-            "' . $this->compSecId . '-cc_emails_to_secondary_email" : { },';
+        if (isset($this->contactsParams['includeSecondaEmail']) && $this->contactsParams['includeSecondaEmail'] === true) {
+            return
+                '"' . $this->compSecId . '-email"                       : { },
+                "' . $this->compSecId . '-secondary_email"              : { },
+                "' . $this->compSecId . '-cc_emails_to_secondary_email" : { },';
+        } else {
+            return
+                '"' . $this->compSecId . '-email"                       : { },';
+        }
     }
 
     protected function inclPhoneJs()
