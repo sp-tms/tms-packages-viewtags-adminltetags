@@ -53,7 +53,13 @@ class Dropzone
     protected function generateContent()
     {
         if (!isset($this->params['storage'])) {
-            throw new \Exception('storage information missing for dropzone.');
+            throw new \Exception('storage information missing.');
+        }
+        if (!isset($this->params['filePackageClass'])) {
+            throw new \Exception('file package class information missing.');
+        }
+        if (!isset($this->params['filePackageRowId'])) {
+            throw new \Exception('file package row id information missing.');
         }
 
         $this->fieldParams['fieldDropzoneLabel'] =
@@ -368,8 +374,8 @@ class Dropzone
                                                                 $this->fieldParams['lightboxSize'] = $this->adminLTETags->helper->lastKey($attachment['links']);
                                                             }
                                                             $preview .=
-                                                            '<a class="chocolat-image" title="' . $attachment['org_file_name'] . '" href="' . $attachment['links'][$this->fieldParams['lightboxSize']] . '">
-                                                                <img alt="' . $attachment['org_file_name'] . '" src="' . $attachment['links'][$this->fieldParams['thumbnailSize']] . '" class="img-fluid img-thumbnail">
+                                                            '<a class="chocolat-image" title="' . $attachment['org_file_name'] . '" href="' . str_replace('public/', '', $attachment['links'][$this->fieldParams['lightboxSize']]) . '">
+                                                                <img alt="' . $attachment['org_file_name'] . '" src="' . str_replace('public/', '', $attachment['links'][$this->fieldParams['thumbnailSize']]) . '" class="img-fluid img-thumbnail">
                                                             </a>';
 
                                                         } else {
@@ -870,6 +876,8 @@ class Dropzone
                                         "storagetype"   : "' . $this->params['storage']['permission'] . '",
                                         "setOrphan"     : "' . $this->params['setOrphan'] . '",
                                         "isPointer"     : "' . $this->params['isPointer'] . '",
+                                        "package_class" : "' . $this->params['filePackageClass'] . '",
+                                        "package_row_id": "' . $this->params['filePackageRowId'] . '",
                                         "isBackupFile"  : "' . $this->params['isBackupFile'] . '"
                                     };
 
